@@ -23,8 +23,8 @@ class Presentation {
   factory Presentation.fromJson(Map<String, dynamic> json) =>
       _$PresentationFromJson(json);
 
-  static create(String privateKey, String ownerDID, List<Credential> credentials) {
-
+  static create(
+      String privateKey, String ownerDID, List<Credential> credentials) {
     var context = [
       "https://www.w3.org/2018/credentials/v1",
       "https://itsme.id/2020/credentials/v1"
@@ -33,21 +33,17 @@ class Presentation {
     var type = [VpType];
 
     var presentation = Presentation(
-        context,
-        id,
-        type,
-        credentials,
-        null,
-    );
-
-    Proof proof = Proof.create(privateKey, utf8.encode(jsonEncode(presentation.toJson())));
-
-    return Presentation(
-      presentation.context,
-      presentation.id,
-      presentation.type,
+      context,
+      id,
+      type,
       credentials,
-      proof
+      null,
     );
+
+    Proof proof = Proof.create(
+        privateKey, utf8.encode(jsonEncode(presentation.toJson())));
+
+    return Presentation(presentation.context, presentation.id,
+        presentation.type, credentials, proof);
   }
 }
