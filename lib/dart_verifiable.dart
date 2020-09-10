@@ -42,9 +42,6 @@ library dart_verifiable;
   }]
  */
 
-class DartVerifiable {
-  _generateBaseVP() {}
-
-  static create(String privateKey, String ownerDID,
-      List<Map<String, dynamic>> credentials) {}
-}
+export 'types/credential.dart';
+export 'types/presentation.dart';
+export 'types/proof.dart';

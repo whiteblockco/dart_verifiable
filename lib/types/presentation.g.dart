@@ -11,10 +11,10 @@ Presentation _$PresentationFromJson(Map<String, dynamic> json) {
     (json['context'] as List)?.map((e) => e as String)?.toList(),
     json['id'] as String,
     (json['type'] as List)?.map((e) => e as String)?.toList(),
-    json['verifiableCredential'] == null
-        ? null
-        : Credential.fromJson(
-            json['verifiableCredential'] as Map<String, dynamic>),
+    (json['verifiableCredential'] as List)
+        ?.map((e) =>
+            e == null ? null : Credential.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
     json['proof'] == null
         ? null
         : Proof.fromJson(json['proof'] as Map<String, dynamic>),

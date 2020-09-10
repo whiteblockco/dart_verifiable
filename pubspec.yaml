@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
   json_annotation: ^3.0.1
   analyzer: ^0.38.2
+  crypto: ^2.1.5
+  cryptography: ^1.4.1
 
 dev_dependencies:
   flutter_test:
