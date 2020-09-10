@@ -12,12 +12,8 @@ Credential _$CredentialFromJson(Map<String, dynamic> json) {
     json['id'] as String,
     (json['type'] as List)?.map((e) => e as String)?.toList(),
     json['issuer'] as String,
-    json['issuanceDate'] == null
-        ? null
-        : DateTime.parse(json['issuanceDate'] as String),
-    json['expirationDate'] == null
-        ? null
-        : DateTime.parse(json['expirationDate'] as String),
+    json['issuanceDate'] as String,
+    json['expirationDate'] as String,
     json['credentialSubject'] as Map<String, dynamic>,
     json['proof'] == null
         ? null
@@ -31,8 +27,8 @@ Map<String, dynamic> _$CredentialToJson(Credential instance) =>
       'id': instance.id,
       'type': instance.type,
       'issuer': instance.issuer,
-      'issuanceDate': instance.issuanceDate?.toIso8601String(),
-      'expirationDate': instance.expirationDate?.toIso8601String(),
+      'issuanceDate': instance.issuanceDate,
+      'expirationDate': instance.expirationDate,
       'credentialSubject': instance.credentialSubject,
       'proof': instance.proof,
     };

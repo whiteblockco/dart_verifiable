@@ -9,7 +9,7 @@ part of 'proof.dart';
 Proof _$ProofFromJson(Map<String, dynamic> json) {
   return Proof(
     json['type'] as String,
-    json['created'] == null ? null : DateTime.parse(json['created'] as String),
+    const RFC3339DateTimeConverter().fromJson(json['created'] as String),
     json['proofPurpose'] as String,
     json['verificationMethod'] as String,
     json['jws'] as String,
@@ -18,7 +18,7 @@ Proof _$ProofFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ProofToJson(Proof instance) => <String, dynamic>{
       'type': instance.type,
-      'created': instance.created?.toIso8601String(),
+      'created': const RFC3339DateTimeConverter().toJson(instance.created),
       'proofPurpose': instance.proofPurpose,
       'verificationMethod': instance.verificationMethod,
       'jws': instance.jws,

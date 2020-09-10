@@ -12,6 +12,10 @@ const jsonData =
 
 const b64PrivateKey = "aYSc7H/FyDVbgFWyRL2eZMHnarovp4A4pD4ro+IP604=";
 
+const issuerB64PrivateKey = "31M+T3q9urxfsPPANzRiKkqDgYhJPZ6A0GmxvTtAobc=";
+
+const issuerB64PublicKey = "ICT8C0k75FHHKOU4e0axbFtmlPi/IsH1M6cz0YIvF/I=";
+
 void main() async {
   var creds = Verifiables.fromJson(jsonDecode(jsonData));
   var vcs = List<Credential>();
@@ -21,22 +25,34 @@ void main() async {
   var p = await Presentation.create(b64PrivateKey, "did:ctn:12341234", vcs);
   var ep = jsonEncode(p);
 
-  await http.post("http://localhost:4434", body: ep);
+  await http.post("http://localhost:4434", body: utf8.encode(ep));
 
   // print(ep);
-
-  print(base64.encode(sha512.hashSync(utf8.encode(ep)).bytes));
 
   var privateKey = PrivateKey(base64Decode(b64PrivateKey));
 
   var keyPair = ed25519.newKeyPairFromSeedSync(privateKey);
 
-  var dec = Presentation.fromJson(jsonDecode(ep));
-  var sig = base64.decode(base64.normalize(dec.proof.jws));
+  var verified = await p.verify(base64.encode(keyPair.publicKey.bytes));
 
-  var b = Presentation(
-      dec.context, dec.id, dec.type, dec.verifiableCredential, null);
+  print(verified);
 
-  print(ed25519.verifySync(utf8.encode(jsonEncode(b.toJson())),
-      Signature(List.from(sig), publicKey: keyPair.publicKey)));
+  var issuerPrivateKey = PrivateKey(base64.decode(issuerB64PrivateKey));
+  var issuerKeyPair = ed25519.newKeyPairFromSeedSync(issuerPrivateKey);
+
+  var v2 = await p.verifiableCredential[0]
+      .verify(base64.encode(issuerKeyPair.publicKey.bytes));
+  print(v2);
+
+  // print(base64.encode(sha512.hashSync(utf8.encode(ep)).bytes));
+  //
+
+  // var dec = Presentation.fromJson(jsonDecode(ep));
+  // var sig = base64.decode(base64.normalize(dec.proof.jws));
+  //
+  // var b = Presentation(
+  //     dec.context, dec.id, dec.type, dec.verifiableCredential, null);
+  //
+  // print(ed25519.verifySync(utf8.encode(jsonEncode(b.toJson())),
+  //     Signature(List.from(sig), publicKey: keyPair.publicKey)));
 }

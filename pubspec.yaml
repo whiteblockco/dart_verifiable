@@ -15,6 +15,7 @@ dependencies:
   analyzer: ^0.38.2
   crypto: ^2.1.5
   cryptography: ^1.4.1
+  rfc_3339_date_time_serializer: ^1.0.1
 
 dev_dependencies:
   flutter_test:
