@@ -26,10 +26,10 @@ class Presentation {
   static create(
       String privateKey, String ownerDID, List<Credential> credentials) {
     var context = [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://itsme.id/2020/credentials/v1"
+      "https://www.w3.org/2018/presentations/v1",
+      "https://itsme.id/2020/presentations/v1"
     ];
-    var id = "id";
+    var id = "uuid-v4";
     var type = [VpType];
 
     var presentation = Presentation(
@@ -39,6 +39,7 @@ class Presentation {
       credentials,
       null,
     );
+
 
     Proof proof = Proof.create(
         privateKey, utf8.encode(jsonEncode(presentation.toJson())));
