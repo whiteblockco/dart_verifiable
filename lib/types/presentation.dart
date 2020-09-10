@@ -40,7 +40,6 @@ class Presentation {
       null,
     );
 
-
     Proof proof = Proof.create(
         privateKey, utf8.encode(jsonEncode(presentation.toJson())));
 
