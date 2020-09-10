@@ -1,117 +1,42 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-void main() {
-  runApp(MyApp());
-}
+import 'package:http/http.dart' as http;
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+import 'package:cryptography/cryptography.dart';
+import 'package:example/verifiable.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+import 'package:dart_verifiable/dart_verifiable.dart';
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+const jsonData =
+    '{"verifiables":[{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/e7103672-c0dc-41a3-a5fc-04cd3baa71b7","type":["VerifiableCredential","UniversityStatusCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.942429922Z","expirationDate":"2020-12-09T14:31:52.942428467Z","credentialSubject":{"id":"did:ctn:12341234","status":"재학"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.942834858Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"2DarqifeaCJ-JCU5dq5LHef1cml9aVduavuTvD9mOpRXESu4ZkJAjkhWWXoYvUjP5DpJ0HnCntqv2lXRJ_7FAg"}},"keyName":"status"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/41a7e44d-f2a9-4701-bf2b-7bf853611033","type":["VerifiableCredential","UniversityStudentIdCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.942846367Z","expirationDate":"2020-12-09T14:31:52.942845864Z","credentialSubject":{"id":"did:ctn:12341234","studentId":"19011296"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.94311351Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"fNFAvJZAwkDH1MR__sU56uxEeQydxIA4tSBi0QwH-DyiSWsNQ97pMszTOFzEMRpnqST7TyCluzEHotsnFCByBQ"}},"keyName":"studentId"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/4f854bad-a88c-4ae2-8d80-c15c905f0105","type":["VerifiableCredential","UniversityNameCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.943119717Z","expirationDate":"2020-12-09T14:31:52.943119386Z","credentialSubject":{"id":"did:ctn:12341234","schoolName":"세종대학교"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.94338115Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"0cyMUryG2hjwucp9E9hdzEAGp8as52QiDuKlxz99_RWoj5hoIRm7NClpl2ltLnRRbhB0JpXMUBN2jmpQjH93Aw"}},"keyName":"schoolName"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/ad815e6b-ec66-4f3b-a844-f487bd2d35b8","type":["VerifiableCredential","UniversityHakjukStatusCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.943387493Z","expirationDate":"2020-12-09T14:31:52.943387208Z","credentialSubject":{"hakjuk":"","id":"did:ctn:12341234"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.9436497Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"kz7WC_6NVYTXlK2UnmppKfWY7m5AVx0fE_7EK8HNRJG8f1vpcI5S7cY415NpW9OKTDYNqQZVB2gK65U1JCYACQ"}},"keyName":"hakjuk"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/a61ea655-7b6c-4e58-b9bb-290b34ef668c","type":["VerifiableCredential","UniversityJaehakStatusCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.943656342Z","expirationDate":"2020-12-09T14:31:52.943656055Z","credentialSubject":{"id":"did:ctn:12341234","jaehakStatus":true},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.943919744Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"5sBquR1Yk6P3syPgtXy6PVDM-6kvl2iwWHBCGn-BoutWsuyzKGIMmUr-QVDr_XXIaF8jk04ZIDBpRcMgvT94Dg"}},"keyName":"jaehakStatus"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/64aeeb08-355e-4276-a96a-71d66f6b1409","type":["VerifiableCredential","UniversityHyuhakStatusCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.943925245Z","expirationDate":"2020-12-09T14:31:52.943924956Z","credentialSubject":{"hyuhakStatus":false,"id":"did:ctn:12341234"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.94418493Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"a1yVhAn62bWnXqWZqH6LF1Ng7KZwCiWHmQaDP3491Rht75A7jj6VF1jPHqlRl76gzu3G1YyRtHOSKew1ZGyDBg"}},"keyName":"hyuhakStatus"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/3c92357f-6e20-4eba-b566-45420f85e24b","type":["VerifiableCredential","UniversityGraduateStatusCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.944190282Z","expirationDate":"2020-12-09T14:31:52.944189996Z","credentialSubject":{"graduateStatus":false,"id":"did:ctn:12341234"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.944460908Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"2ncIY3X9-m7cfFIPKX7JARH1Cg0ib0pembRjpFDubSeSe_661MxXV2YDA7wyRUSaamL67F2I4H-fWYV3KUXWAQ"}},"keyName":"graduateStatus"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/18b7f294-3548-4ad2-9a12-7c5923693f6c","type":["VerifiableCredential","UniversityAdmissionStatusCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.944475498Z","expirationDate":"2020-12-09T14:31:52.944475198Z","credentialSubject":{"admissionStatus":true,"id":"did:ctn:12341234"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.944745722Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"R9yA09H-MdVYSQBkDhq-3I4kIyv5Mn5gUO3hV8XxN18fgtNp6ckXadNwrsGele9SvoG8HXG7PQfnFWs7VT-KAA"}},"keyName":"admissionStatus"},{"verifiable":{"@context":["https://www.w3.org/2018/credentials/v1","https://itsme.id/2020/credentials/v1"],"id":"https://itsme.id/credentials/46e01226-dccc-4505-a37c-ba6d853d7581","type":["VerifiableCredential","UniversityExpelStatusCredential"],"issuer":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a","issuanceDate":"2020-09-10T14:31:52.944751509Z","expirationDate":"2020-12-09T14:31:52.944751208Z","credentialSubject":{"expelStatus":false,"id":"did:ctn:12341234"},"proof":{"type":"Ed25519Signature2018","created":"2020-09-10T14:31:52.945066603Z","proofPurpose":"assertionMethod","verificationMethod":"https://itsme.id/issuers/37c40cf5-8bee-4555-945c-db70b16ad91a/keys/1","jws":"K5kf1XVb1a3f8uc3zLGNNgiPYiXZ2e73YZnY_APYhPVZTSazpNad8MxJjOHOmc906dphCNvd7SiWPT-A6-NlCw"}},"keyName":"expelStatus"}]}';
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+const b64PrivateKey = "aYSc7H/FyDVbgFWyRL2eZMHnarovp4A4pD4ro+IP604=";
 
-  final String title;
+void main() async {
+  var creds = Verifiables.fromJson(jsonDecode(jsonData));
+  var vcs = List<Credential>();
+  creds.verifiables.forEach((element) {
+    vcs.add(element.verifiable);
+  });
+  var p = await Presentation.create(b64PrivateKey, "did:ctn:12341234", vcs);
+  var ep = jsonEncode(p);
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
+  await http.post("http://localhost:4434", body: ep);
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  // print(ep);
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  print(base64.encode(sha512.hashSync(utf8.encode(ep)).bytes));
 
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
+  var privateKey = PrivateKey(base64Decode(b64PrivateKey));
+
+  var keyPair = ed25519.newKeyPairFromSeedSync(privateKey);
+
+  var dec = Presentation.fromJson(jsonDecode(ep));
+  var sig = base64.decode(base64.normalize(dec.proof.jws));
+
+  var b = Presentation(
+      dec.context, dec.id, dec.type, dec.verifiableCredential, null);
+
+  print(ed25519.verifySync(utf8.encode(jsonEncode(b.toJson())),
+      Signature(List.from(sig), publicKey: keyPair.publicKey)));
 }

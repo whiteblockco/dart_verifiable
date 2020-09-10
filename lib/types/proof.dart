@@ -26,10 +26,10 @@ class Proof {
 
     return Proof(
       "Ed25519Signature2018",
-      DateTime.now(),
+      DateTime.now().toUtc(),
       "assertionMetohod",
       "what is it?!",
-      base64.encode(signed),
+      base64.encode(signed).replaceAll("=", ""),
     );
   }
 }

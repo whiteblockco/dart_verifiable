@@ -8,7 +8,7 @@ part of 'presentation.dart';
 
 Presentation _$PresentationFromJson(Map<String, dynamic> json) {
   return Presentation(
-    (json['context'] as List)?.map((e) => e as String)?.toList(),
+    (json['@context'] as List)?.map((e) => e as String)?.toList(),
     json['id'] as String,
     (json['type'] as List)?.map((e) => e as String)?.toList(),
     (json['verifiableCredential'] as List)
@@ -23,7 +23,7 @@ Presentation _$PresentationFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$PresentationToJson(Presentation instance) =>
     <String, dynamic>{
-      'context': instance.context,
+      '@context': instance.context,
       'id': instance.id,
       'type': instance.type,
       'verifiableCredential': instance.verifiableCredential,

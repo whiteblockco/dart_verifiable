@@ -8,7 +8,7 @@ part of 'credential.dart';
 
 Credential _$CredentialFromJson(Map<String, dynamic> json) {
   return Credential(
-    (json['context'] as List)?.map((e) => e as String)?.toList(),
+    (json['@context'] as List)?.map((e) => e as String)?.toList(),
     json['id'] as String,
     (json['type'] as List)?.map((e) => e as String)?.toList(),
     json['issuer'] as String,
@@ -27,7 +27,7 @@ Credential _$CredentialFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$CredentialToJson(Credential instance) =>
     <String, dynamic>{
-      'context': instance.context,
+      '@context': instance.context,
       'id': instance.id,
       'type': instance.type,
       'issuer': instance.issuer,

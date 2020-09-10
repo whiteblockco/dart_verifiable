@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
@@ -19,7 +20,7 @@ class Ed25519Singer implements Signer {
 
   @override
   Future<Uint8List> sign(Uint8List msg, key) async {
-    var privateKey = key as PrivateKey;
+    var privateKey = PrivateKey(base64Decode(key));
     final keyPair = await ed25519.newKeyPairFromSeed(privateKey);
     final signature = await ed25519.sign(
       msg,

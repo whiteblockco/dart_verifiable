@@ -5,6 +5,7 @@ part 'credential.g.dart';
 
 @JsonSerializable()
 class Credential {
+  @JsonKey(name: "@context")
   final List<String> context;
   final String id;
   final List<String> type;
